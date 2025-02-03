@@ -4,7 +4,7 @@
 
 Discord PTB plugin for the [asdf version manager](https://asdf-vm.com).
 
-[![Build](https://github.com/mkungla/asdf-discord-ptb/actions/workflows/main.yml/badge.svg)](https://github.com/mkungla/discord-ptb/actions/workflows/main.yml)
+[![Build](https://github.com/mkungla/asdf-discord-ptb/actions/workflows/main.yml/badge.svg)](https://github.com/mkungla/asdf-discord-ptb/actions/workflows/main.yml)
 
 
 </div>
