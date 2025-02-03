@@ -45,8 +45,8 @@ asdf install discord-ptb latest
 # Set a version globally (on your ~/.tool-versions file)
 asdf set -u discord-ptb latest
 
-# Now godot commands are available
-discord-ptb --version
+# Apply .desktop for window manager
+asdf cmd discord-ptb setup
 ```
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to

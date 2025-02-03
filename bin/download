@@ -15,7 +15,7 @@
 # Usage: ./download
 # Author: Marko Kungla
 # Created: 2025-02-02
-# Dependencies: ./lib/asdf-godot.bash
+# Dependencies: ./lib/asdf-discord-ptb.bash
 # ScriptType: Required
 # Notes:
 # URL: https://asdf-vm.com/plugins/create.html#bin-download

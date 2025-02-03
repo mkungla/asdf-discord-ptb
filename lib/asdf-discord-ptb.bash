@@ -33,10 +33,6 @@ DISCORD_API_URL="https://discordapp.com/api/ptb/updates?platform=linux"
 VERSIONS_FILE="${plugin_dir}/local/versions.txt"
 
 curl_opts=(-fsSL)
-# NOTE: You might want to remove this if godot is not hosted on GitHub releases.
-if [ -n "${GITHUB_API_TOKEN:-}" ]; then
-	curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
-fi
 
 # ensure that versions.txt
 touch $VERSIONS_FILE
@@ -106,6 +102,26 @@ download_release() {
 	dl_filename="$2"
 	dl_url="https://dl-ptb.discordapp.net/apps/linux/${version}/discord-ptb-${version}.tar.gz"
 
-	echo "* Downloading Godot release ${version}... ($dl_filename)"
-	curl "${curl_opts[@]}" -o "${ASDF_DOWNLOAD_PATH}/${dl_filename}" -C - "$dl_url" || fail "Failed to download Godot from $dl_url"
+	echo "* Downloading Discord PTB release ${version}... ($dl_filename)"
+	curl "${curl_opts[@]}" -o "${ASDF_DOWNLOAD_PATH}/${dl_filename}" -C - "$dl_url" || fail "Failed to download Discord PTB from $dl_url"
+}
+
+install_version() {
+	local install_type="$1"
+	local version="$2"
+	local install_path="${3}"
+
+	if [ "$install_type" != "version" ]; then
+		fail "asdf-$TOOL_NAME supports release installs only"
+	fi
+
+	(
+		mkdir -p "${install_path}/bin"
+		cp -r "${ASDF_DOWNLOAD_PATH}"/* "$install_path"
+		ln -s "${install_path}/discord-ptb" "${install_path}/bin/discord-ptb"
+		echo "$TOOL_NAME $version installation was successful!"
+	) || (
+		rm -r "$install_path"
+		fail "An error occurred while installing $TOOL_NAME $version."
+	)
 }
