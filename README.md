@@ -45,7 +45,7 @@ asdf install discord-ptb latest
 # Set a version globally (on your ~/.tool-versions file)
 asdf set -u discord-ptb latest
 
-# Apply .desktop for window manager
+# Apply .desktop and discord icons for window manager
 asdf cmd discord-ptb setup
 ```
 

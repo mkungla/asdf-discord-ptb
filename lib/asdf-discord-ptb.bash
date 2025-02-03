@@ -28,6 +28,8 @@
 
 set -euo pipefail
 
+plugin_dir="${plugin_dir:-$HOME/.local}"
+
 TOOL_NAME="discord-ptb"
 DISCORD_API_URL="https://discordapp.com/api/ptb/updates?platform=linux"
 VERSIONS_FILE="${plugin_dir}/local/versions.txt"
@@ -35,7 +37,7 @@ VERSIONS_FILE="${plugin_dir}/local/versions.txt"
 curl_opts=(-fsSL)
 
 # ensure that versions.txt
-touch $VERSIONS_FILE
+touch "$VERSIONS_FILE"
 
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"

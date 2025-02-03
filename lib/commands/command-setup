@@ -30,7 +30,7 @@
 set -euo pipefail
 
 current_script_path=${BASH_SOURCE[0]}
-plugin_dir=$(dirname $(dirname "$(dirname "$current_script_path")"))
+plugin_dir=$(dirname "$(dirname "$(dirname "$current_script_path")")")
 
 # shellcheck source=./lib/asdf-discord-ptb.bash
 source "${plugin_dir}/lib/asdf-discord-ptb.bash"
@@ -38,31 +38,32 @@ source "${plugin_dir}/lib/asdf-discord-ptb.bash"
 data_dir=$HOME/.local/share
 applications_dir="${data_dir}/applications"
 pixmaps_dir="${data_dir}/pixmaps"
-discord_dir="$(dirname $(dirname $(asdf which discord-ptb)))"
+# discord_dir="$(dirname $(dirname $(asdf which discord-ptb)))"
 resources_dir="${plugin_dir}/res"
 
-mkdir -p $pixmaps_dir
-
-mkdir -p $applications_dir
+mkdir -p "$pixmaps_dir"
+mkdir -p "$applications_dir"
 
 echo "resource: discord-ptb.desktop (copy)"
 desktop_file_src="${resources_dir}/discord-ptb.desktop"
 desktop-file-validate "$desktop_file_src"
-cp $desktop_file_src "${applications_dir}/discord-ptb.desktop"
+cp "$desktop_file_src" "${applications_dir}/discord-ptb.desktop"
 
 if command -v gsettings &>/dev/null; then
 	# Get the current icon theme using gsettings
 	echo "resources: discord-ptb.png (copy)"
 	icon_theme=$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/'//g")
 	icon_dir_root="${HOME}/.local/share/icons/${icon_theme}"
-	mkdir -p ${icon_dir_root}/{16x16,32x32,48x48,128x128}/apps
+	mkdir -p "${icon_dir_root}"/{16x16,32x32,48x48,128x128}/apps
 
 	cp "${resources_dir}/discord.png" "$icon_dir_root/16x16/apps/discord-ptb.png"
 	cp "${resources_dir}/discord.png" "$icon_dir_root/32x32/apps/discord-ptb.png"
 	cp "${resources_dir}/discord.png" "$icon_dir_root/48x48/apps/discord-ptb.png"
 	cp "${resources_dir}/discord.png" "$icon_dir_root/128x128/apps/discord-ptb.png"
 
-	gtk-update-icon-cache -f -t $icon_dir_root
+	gtk-update-icon-cache -f -t "$icon_dir_root"
+	xdg-desktop-menu forceupdate
+	xdg-icon-resource forceupdate
 fi
 
 # echo "data_dir: $data_dir"

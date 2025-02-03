@@ -55,7 +55,7 @@ download_release "$ASDF_INSTALL_VERSION" "$download_filename"
 
 #  Extract contents of tar.gz file into the download directory
 echo "Extracting: $download_filename"
-tar -xzf "$downloaded_archive" -C "$ASDF_DOWNLOAD_PATH" --strip-components=1 || fail "Could not extract $release_file"
+tar -xzf "$downloaded_archive" -C "$ASDF_DOWNLOAD_PATH" --strip-components=1 || fail "Could not extract $download_filename"
 rm "$downloaded_archive"
 
 mv "${ASDF_DOWNLOAD_PATH}/DiscordPTB" "${ASDF_DOWNLOAD_PATH}/discord-ptb"
