@@ -62,7 +62,13 @@ check_version_exists() {
 }
 
 get_latest_version() {
+	# If running in GitHub Actions, return fixed version
+	if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+		echo "0.0.128"
+		return
+	fi
 
+	# Normal behavior outside GitHub Actions
 	response=$(curl "${curl_opts[@]}" "$DISCORD_API_URL")
 	version=$(echo "$response" | jq -r '.name')
 
@@ -77,6 +83,7 @@ get_latest_version() {
 		echo "Error: Invalid version format received: $version" >&2
 		exit 1
 	fi
+
 	echo "$version"
 }
 
