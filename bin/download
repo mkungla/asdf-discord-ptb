@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1090
+
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (C) 2025 Marko Kungla
+# See the LICENSE file for full licensing details.
+
+# This file is subject to the Apache License Version 2.0, as stated in the LICENSE file
+# at the time of creation. Check Git history for further details.
+
+# -----------------------------------------------------------------------------
+# Script Information
+# -----------------------------------------------------------------------------
+# Description: Download source code or binary for the specified version.
+# Usage: ./download
+# Author: Marko Kungla
+# Created: 2025-02-02
+# Dependencies: ./lib/asdf-godot.bash
+# ScriptType: Required
+# Notes:
+# URL: https://asdf-vm.com/plugins/create.html#bin-download
+
+# -----------------------------------------------------------------------------
+# Example Usage
+# -----------------------------------------------------------------------------
+# ./download
+#
+# -----------------------------------------------------------------------------
+
+#!/usr/bin/env bash
+#
+# type: required
+
+set -euo pipefail
+
+current_script_path=${BASH_SOURCE[0]}
+plugin_dir=$(dirname "$(dirname "$current_script_path")")
+
+# shellcheck source=./lib/asdf-discord-ptb.bash
+source "${plugin_dir}/lib/asdf-discord-ptb.bash"
+
+if [ "$ASDF_INSTALL_TYPE" != "version" ]; then
+	fail "only ASDF_INSTALL_TYPE version is supported, got ASDF_INSTALL_TYPE=$ASDF_INSTALL_TYPE"
+fi
+
+mkdir -p "$ASDF_DOWNLOAD_PATH"
+
+download_filename="$(get_download_filename "$ASDF_INSTALL_VERSION")"
+downloaded_archive="$ASDF_DOWNLOAD_PATH/$download_filename"
+
+if ! check_version_exists "$ASDF_INSTALL_VERSION"; then
+	fail "invalid version, check (asdf install discord-ptb) for valid versions."
+fi
+download_release "$ASDF_INSTALL_VERSION" "$download_filename"
+
+#  Extract contents of tar.gz file into the download directory
+echo "Extracting: $download_filename"
+tar -xzf "$downloaded_archive" -C "$ASDF_DOWNLOAD_PATH" --strip-components=1 || fail "Could not extract $release_file"
+rm "$downloaded_archive"
+
+mv "${ASDF_DOWNLOAD_PATH}/DiscordPTB" "${ASDF_DOWNLOAD_PATH}/discord-ptb"

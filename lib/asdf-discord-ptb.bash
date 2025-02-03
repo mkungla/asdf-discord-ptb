@@ -38,6 +38,9 @@ if [ -n "${GITHUB_API_TOKEN:-}" ]; then
 	curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
 fi
 
+# ensure that versions.txt
+touch $VERSIONS_FILE
+
 fail() {
 	echo -e "asdf-$TOOL_NAME: $*"
 	exit 1
@@ -48,17 +51,27 @@ sort_versions() {
 		LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
 }
 
+# Function to check if a version is valid semantic versioning (X.Y.Z)
+is_valid_version() {
+	local version="$1"
+	[[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+}
+
+# Function to check if a version exists in versions.txt
+check_version_exists() {
+	local version="$1"
+	grep -Fxq "$version" "$VERSIONS_FILE"
+}
+
 get_latest_version() {
-	# ensure that versions.txt
-	touch $VERSIONS_FILE
 
 	response=$(curl "${curl_opts[@]}" "$DISCORD_API_URL")
 	version=$(echo "$response" | jq -r '.name')
 
 	# Validate if the extracted version is a valid semantic version
-	if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+	if is_valid_version "$version"; then
 		# Check if version is already in the file
-		if ! grep -Fxq "$version" "$VERSIONS_FILE"; then
+		if ! check_version_exists "$version"; then
 			# Append new version to the file
 			echo "$version" >>"$VERSIONS_FILE"
 		fi
@@ -70,8 +83,6 @@ get_latest_version() {
 }
 
 list_all_versions() {
-	# ensure that versions.txt
-	touch $VERSIONS_FILE
 
 	# Output all recorded versions
 	cat "$VERSIONS_FILE"
@@ -81,4 +92,20 @@ list_all_versions() {
 	if ! grep -Fxq "$latest" "$VERSIONS_FILE"; then
 		echo "$latest"
 	fi
+}
+
+get_download_filename() {
+	local version
+	version="$1"
+	echo "discord-ptb-$version.tar.gz"
+}
+
+download_release() {
+	local version dl_filename
+	version="$1"
+	dl_filename="$2"
+	dl_url="https://dl-ptb.discordapp.net/apps/linux/${version}/discord-ptb-${version}.tar.gz"
+
+	echo "* Downloading Godot release ${version}... ($dl_filename)"
+	curl "${curl_opts[@]}" -o "${ASDF_DOWNLOAD_PATH}/${dl_filename}" -C - "$dl_url" || fail "Failed to download Godot from $dl_url"
 }
