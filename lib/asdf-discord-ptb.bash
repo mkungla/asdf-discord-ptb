@@ -48,15 +48,12 @@ sort_versions() {
 		LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
 }
 
-list_all_versions() {
+get_latest_version() {
 	# ensure that versions.txt
 	touch $VERSIONS_FILE
 
 	response=$(curl "${curl_opts[@]}" "$DISCORD_API_URL")
 	version=$(echo "$response" | jq -r '.name')
-
-	# Output all recorded versions
-	cat "$VERSIONS_FILE"
 
 	# Validate if the extracted version is a valid semantic version
 	if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -64,10 +61,24 @@ list_all_versions() {
 		if ! grep -Fxq "$version" "$VERSIONS_FILE"; then
 			# Append new version to the file
 			echo "$version" >>"$VERSIONS_FILE"
-			echo "$version"
 		fi
 	else
 		echo "Error: Invalid version format received: $version" >&2
 		exit 1
+	fi
+	echo "$version"
+}
+
+list_all_versions() {
+	# ensure that versions.txt
+	touch $VERSIONS_FILE
+
+	# Output all recorded versions
+	cat "$VERSIONS_FILE"
+
+	latest=$(get_latest_version)
+
+	if ! grep -Fxq "$latest" "$VERSIONS_FILE"; then
+		echo "$latest"
 	fi
 }
