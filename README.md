@@ -1,6 +1,6 @@
 <div align="center">
 
-# asdf-godot 
+# asdf-discord-ptb
 
 Discord PTB plugin for the [asdf version manager](https://asdf-vm.com).
 
@@ -11,7 +11,6 @@ Discord PTB plugin for the [asdf version manager](https://asdf-vm.com).
 
 # Contents
 
-- [asdf-godot](#asdf-godot)
 - [Contents](#contents)
 - [Dependencies](#dependencies)
 - [Install](#install)
